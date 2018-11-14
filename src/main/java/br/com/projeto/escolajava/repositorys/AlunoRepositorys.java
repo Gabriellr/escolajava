@@ -37,6 +37,5 @@ public class AlunoRepositorys {
 
 		cliente.close();
 	}
- public List
 
 }
