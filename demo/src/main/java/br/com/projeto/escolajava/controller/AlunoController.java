@@ -1,5 +1,7 @@
 package br.com.projeto.escolajava.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
@@ -28,6 +30,13 @@ public class AlunoController {
 		System.out.println("Aluno para salvar:"+ aluno);
 		repository.salvar(aluno);
 		return "redirect:/";
+	}
+	@GetMapping("/aluno/listar")
+	public String listar(Model model){
+		List<Aluno> alunos = null;
+		model.addAttribute("aluno", alunos);
+		
+		return "aluno/listar";
 	}
 
 }
