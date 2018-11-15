@@ -1,8 +1,15 @@
 package br.com.projeto.escolajava.models;
 
 public class Curso {
+	
 	private String nome;
-
+	
+	public Curso(){}
+	
+	public Curso(String nome) {
+		this.nome = nome;
+	}
+	
 	public String getNome() {
 		return nome;
 	}
@@ -11,5 +18,4 @@ public class Curso {
 		this.nome = nome;
 	}
 	
-
 }

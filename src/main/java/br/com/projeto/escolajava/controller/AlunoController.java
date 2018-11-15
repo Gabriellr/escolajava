@@ -8,17 +8,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import br.com.projeto.escolajava.models.Aluno;
-import br.com.projeto.escolajava.repositorys.AlunoRepositorys;
+import br.com.projeto.escolajava.repositorys.AlunoRepository;
 
 @Controller
 @SpringBootApplication
 public class AlunoController {
 	
 	@Autowired
-	private AlunoRepositorys repository;
+	private AlunoRepository repository;
 	
 	@GetMapping("/aluno/cadastrar")
 	public String cadastrar(Model model){
@@ -33,10 +34,20 @@ public class AlunoController {
 	}
 	@GetMapping("/aluno/listar")
 	public String listar(Model model){
-		List<Aluno> alunos = null;
-		model.addAttribute("aluno", alunos);
-		
+		List<Aluno> alunos = repository.obterTodosAlunos();
+		model.addAttribute("alunos", alunos);
 		return "aluno/listar";
 	}
+	
+	@GetMapping("/aluno/visualizar/{id}")
+	public String visualizar(@PathVariable String id, Model model){
+		
+		Aluno aluno = repository.obterAlunoPor(id);
+		
+		model.addAttribute("aluno", aluno);
+		
+		return "aluno/visualizar";
+	}
+	
 
 }
