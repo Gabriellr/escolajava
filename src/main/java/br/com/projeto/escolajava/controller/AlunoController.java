@@ -1,5 +1,6 @@
 package br.com.projeto.escolajava.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +11,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.google.maps.errors.ApiException;
 
 import br.com.projeto.escolajava.models.Aluno;
 import br.com.projeto.escolajava.repositorys.AlunoRepository;
+import br.com.projeto.escolajava.service.GeolocalizacaoService;
 
 @Controller
 @SpringBootApplication
@@ -20,6 +25,9 @@ public class AlunoController {
 	
 	@Autowired
 	private AlunoRepository repository;
+	
+	@Autowired
+	private GeolocalizacaoService geolocalizacaoService;
 	
 	@GetMapping("/aluno/cadastrar")
 	public String cadastrar(Model model){
@@ -29,7 +37,15 @@ public class AlunoController {
 	@PostMapping("/aluno/salvar")
 	public String salvar(@ModelAttribute Aluno aluno){
 		System.out.println("Aluno para salvar:"+ aluno);
-		repository.salvar(aluno);
+		try {
+			List<Double>   latElong = geolocalizacaoService.obterLatELongPor(aluno.getContato());
+			aluno.getContato().setCoordinates(latElong);
+			repository.salvar(aluno);
+		} catch (Exception e) {
+			System.out.println("Endereco nao localizado");
+			e.printStackTrace();
+		} 
+		
 		return "redirect:/";
 	}
 	@GetMapping("/aluno/listar")
@@ -49,5 +65,35 @@ public class AlunoController {
 		return "aluno/visualizar";
 	}
 	
-
+	@GetMapping("/aluno/pesquisarnome")
+     public String pesquisarNome(){
+    	 return "aluno/pesquisarnome";
+     }
+	@GetMapping("/aluno/pesquisar")
+	public String pesquisar(@RequestParam("nome") String nome, Model model){
+		List<Aluno> alunos = repository.pesquisarPor(nome);
+		model.addAttribute("alunos", alunos);
+		return "aluno/pesquisarnome";
+	}
+	
+	@GetMapping("/nota/iniciarpesquisa")
+	public String iniciarPesquisa(){
+		
+		return "nota/pesquisar";
+	}
+	
+	@GetMapping("/nota/pesquisar")
+	public String pesquisaPor(@RequestParam("classificacao")String classificacao, 
+			@RequestParam("notacorte") String notaCorte, Model model){
+		 List<Aluno> alunos =  repository.pesquisarPor(classificacao, Double.parseDouble(notaCorte));
+		 
+		 model.addAttribute("alunos", alunos);
+		
+		
+		return "nota/pesquisar";
+	}
+	
+	
+	
+	
 }
